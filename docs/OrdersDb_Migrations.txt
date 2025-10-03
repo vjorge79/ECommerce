@@ -1,0 +1,8 @@
+> dotnet ef migrations add Initial --startup-project src/OrderService/OrderService.API --project src/OrderService/OrderService.Infrastructure --output-dir Persistence/Migrations
+> dotnet ef migrations script --startup-project src/OrderService/OrderService.API --project src/OrderService/OrderService.Infrastructure -o database/sql/orderdb.sql
+> dotnet ef database update --startup-project src/OrderService/OrderService.API --project src/OrderService/OrderService.Infrastructure
+
+
+> dotnet ef migrations add Add_Order_Status --startup-project src/OrderService/OrderService.API --project src/OrderService/OrderService.Infrastructure --output-dir Persistence/Migrations
+> dotnet ef migrations script --startup-project src/OrderService/OrderService.API --project src/OrderService/OrderService.Infrastructure -o database/sql/orderdb_add_status.sql
+> dotnet ef database update --startup-project src/OrderService/OrderService.API --project src/OrderService/OrderService.Infrastructure

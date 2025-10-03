@@ -1,0 +1,67 @@
+# version: '3.9'
+services:
+  sqlserver:
+    image: mcr.microsoft.com/mssql/server:2022-latest
+    container_name: sqlserver
+    environment:
+      - ACCEPT_EULA=Y
+      - SA_PASSWORD=Admin@123
+      - MSSQL_PID=Developer
+    ports:
+      - "1433:1433"
+    # healthcheck:
+    #   test: ["CMD", "/opt/mssql-tools/bin/sqlcmd", "-S", "localhost,1433", "-U", "sa", "-P", "Your_password123", "-Q", "SELECT 1"]
+    #   interval: 10s
+    #   timeout: 5s
+    #   retries: 10
+
+  rabbitmq:
+    image: rabbitmq:3.12-management
+    container_name: rabbitmq
+    environment:
+      - RABBITMQ_DEFAULT_USER=guest
+      - RABBITMQ_DEFAULT_PASS=guest
+      - RABBITMQ_DEFAULT_VHOST=/
+    ports:
+      - "5672:5672"
+      - "15672:15672"
+
+  orderservice.api:
+    build:
+      context: .
+      dockerfile: src/OrderService/OrderService.API/Dockerfile
+    container_name: orderservice.api
+    depends_on:
+      - sqlserver
+      - rabbitmq
+    environment:
+      - ASPNETCORE_ENVIRONMENT=Development
+      - ASPNETCORE_URLS=http://+:8080
+      - ConnectionStrings__DefaultConnection=Server=sqlserver,1433;Database=OrdersDb;User Id=sa;Password=Admin@123;TrustServerCertificate=True
+      - RabbitMq__Host=rabbitmq
+      - RabbitMq__Port=5672
+      - RabbitMq__VirtualHost=/
+      - RabbitMq__Username=guest
+      - RabbitMq__Password=guest
+    ports:
+      - "5101:8080"
+
+  paymentservice.api:
+    build:
+      context: .
+      dockerfile: src/PaymentService/PaymentService.API/Dockerfile
+    container_name: paymentservice.api
+    depends_on:
+      - sqlserver
+      - rabbitmq
+    environment:
+      - ASPNETCORE_ENVIRONMENT=Development
+      - ASPNETCORE_URLS=http://+:8080 
+      - ConnectionStrings__DefaultConnection=Server=sqlserver,1433;Database=PaymentsDb;User Id=sa;Password=Admin@123;TrustServerCertificate=True
+      - RabbitMq__Host=rabbitmq
+      - RabbitMq__Port=5672
+      - RabbitMq__VirtualHost=/
+      - RabbitMq__Username=guest
+      - RabbitMq__Password=guest
+    ports:
+      - "5201:8080"
