@@ -1,10 +1,9 @@
 ﻿using MassTransit;
 using MediatR;
-using Microsoft.Extensions.Logging;
 using Ordering.Contracts;
 using PaymentService.Application.Payments.Commands;
 
-namespace PaymentService.Infrastructure.Messaging;
+namespace PaymentService.Worker.Messaging;
 
 public sealed class OrderCreatedConsumer(ILogger<OrderCreatedConsumer> logger, IMediator mediator)
     : IConsumer<OrderCreatedV1>
